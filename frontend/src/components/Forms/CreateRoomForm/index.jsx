@@ -30,7 +30,7 @@ const CreateRoomForm = () => {
             id="roomCode"
             type="text"
             placeholder="Generate Room Code"
-            className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400 min-w-0"
+            className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400 min-w-0 placeholder:text-sm"
             readOnly
           />
           <button
