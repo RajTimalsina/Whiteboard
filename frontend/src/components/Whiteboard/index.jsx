@@ -3,7 +3,14 @@ import rough from "roughjs";
 
 const roughGenerator = rough.generator();
 
-const WhiteBoard = ({ canvasRef, ctxRef, elements, setElements, tool }) => {
+const WhiteBoard = ({
+  canvasRef,
+  ctxRef,
+  elements,
+  setElements,
+  tool,
+  color,
+}) => {
   const [drawing, setDrawing] = useState(false);
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,14 +33,20 @@ const WhiteBoard = ({ canvasRef, ctxRef, elements, setElements, tool }) => {
     }
 
     elements.forEach((element) => {
+      const options = {
+        stroke: element.stroke || "#000000", // Use stored stroke
+        strokeWidth: 1,
+        roughness: 0.1,
+      };
       if (element.type == "pencil") {
-        roughCanvas.linearPath(element.path);
+        roughCanvas.linearPath(element.path, options);
       } else if (element.type == "line") {
         const line = roughGenerator.line(
           element.offsetX,
           element.offsetY,
           element.width,
-          element.height
+          element.height,
+          options
         );
 
         roughCanvas.draw(line);
@@ -42,7 +55,8 @@ const WhiteBoard = ({ canvasRef, ctxRef, elements, setElements, tool }) => {
           element.offsetX,
           element.offsetY,
           element.width,
-          element.height
+          element.height,
+          options
         );
 
         roughCanvas.draw(rectangle);
@@ -64,7 +78,7 @@ const WhiteBoard = ({ canvasRef, ctxRef, elements, setElements, tool }) => {
           offsetX,
           offsetY,
           path: [[offsetX, offsetY]],
-          stroke: "black",
+          stroke: color,
         },
       ]);
     } else if (tool == "line") {
@@ -76,7 +90,7 @@ const WhiteBoard = ({ canvasRef, ctxRef, elements, setElements, tool }) => {
           offsetY,
           width: offsetX,
           height: offsetY,
-          stroke: "black",
+          stroke: color,
         },
       ]);
     } else if (tool == "rectangle") {
@@ -88,7 +102,7 @@ const WhiteBoard = ({ canvasRef, ctxRef, elements, setElements, tool }) => {
           offsetY,
           width: offsetX,
           height: offsetY,
-          stroke: "black",
+          stroke: color,
         },
       ]);
     }

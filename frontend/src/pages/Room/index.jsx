@@ -5,9 +5,49 @@ const RoomPage = () => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const [elements, setElements] = useState([]);
-
+  const [history, setHistory] = useState([]);
+  const [redoHistory, setRedoHistory] = useState([]);
+  const canvas = canvasRef.current;
+  const ctx = ctxRef.current;
   const [tool, setTool] = useState("pencil");
   const [color, setColor] = useState("black");
+
+  const handleClearCanvas = () => {
+    setElements([]);
+    setHistory([]);
+    setRedoHistory([]);
+
+    if (canvas && ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    console.log("Canvas cleared");
+  };
+
+  const handleUndo = () => {
+    if (elements.length === 0) return;
+
+    const newElements = [...elements];
+    const lastElement = newElements.pop();
+
+    setElements(newElements);
+    setRedoHistory([...redoHistory, lastElement]);
+    // if (newElements.length === 0) {
+    //   if (canvas && ctx) {
+    //     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //   }
+    //   console.log("Canvas cleared after undo");
+    // }
+  };
+  const handleRedo = () => {
+    const newRedoHistory = [...redoHistory];
+    const redoElement = newRedoHistory.pop();
+
+    if (redoElement) {
+      setElements([...elements, redoElement]);
+      setRedoHistory(newRedoHistory);
+    }
+  };
 
   return (
     <div className="min-h-screen p-4 bg-gray-100">
@@ -67,7 +107,10 @@ const RoomPage = () => {
             id="color"
             className="h-6 w-6"
             value={color}
-            onChange={(e) => setColor(e.target.value)}
+            onChange={(e) => (
+              console.log("Selected Color:", e.target.value),
+              setColor(e.target.value)
+            )}
           />
         </div>
 
@@ -76,12 +119,16 @@ const RoomPage = () => {
           <button
             type="button"
             className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            onClick={handleUndo}
+            disabled={elements.length === 0}
           >
             Undo
           </button>
           <button
             type="button"
             className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            onClick={handleRedo}
+            disabled={redoHistory.length === 0}
           >
             Redo
           </button>
@@ -92,6 +139,7 @@ const RoomPage = () => {
           <button
             type="button"
             className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+            onClick={handleClearCanvas}
           >
             Clear
           </button>
@@ -106,6 +154,7 @@ const RoomPage = () => {
           elements={elements}
           setElements={setElements}
           tool={tool}
+          color={color}
         />
       </div>
     </div>
